@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="style.css">
+<html>
+
+<head>
+    <title>Upload and Filter CSV</title>
+</head>
+
+<body>
+    <h2>Upload a CSV File</h2>
+    <input type="file" id="fileInput" accept=".csv, .xlsx" multiple>
+    <label for="columnSelect">Select Column to Filter:</label>
+    <select id="columnSelect"></select>
+    <input type="text" id="filter" placeholder="Enter filter criteria">
+    <button id="applyFilter">Apply Filter</button>
+    <button id="exportExcel">Export to Excel</button>
+    <pre id="output"></pre>
+    <script src="js/xlsx.full.min.js"></script>
+    <script src="Content.js"></script>
+
+</body>
+
+</html>

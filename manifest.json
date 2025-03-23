@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "TUIO Filter",
+    "version": "1.0.0",
+    "content_scripts": [
+        {
+            "matches": [
+                "https://app.tuiopay.com/programs/4379820/registration"
+            ],
+            "js": [
+                "Content.js"
+            ]
+        }
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "permissions": [
+        "storage"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ]
+}

@@ -87,7 +87,8 @@ the processFiles(dataframes) will contain the parsed files
 
 document.getElementById("fileInput").addEventListener("change", function (event) {
     let files = event.target.files;
-    if (files.length === 0 || files.length > 3) {
+    if (files.length !== 3) {
+        alert("Please upload exactly 3 files (CSV/XLSX).");
         return;
     }
 
@@ -111,8 +112,7 @@ document.getElementById("fileInput").addEventListener("change", function (event)
             dataFrames.push({ name: file.name, data: jsonData });
             processedFiles++;
 
-            if (processedFiles === files.length) {
-                alert("Files uploaded successfully");
+            if (processedFiles === 3) {
                 processFiles(dataFrames);
             }
         };
@@ -125,86 +125,86 @@ document.getElementById("fileInput").addEventListener("change", function (event)
     });
 });
 
-// /*{
-// the function below will extract the files from upload and see if there are any common columns between the files 
-// if there is no common columns, it will merge on parent name 
-// }*/
-// function processFiles(dataFrames) {
-//     let commonColumns = findCommonColumns(dataFrames);
+/*{
+the function below will extract the files from upload and see if there are any common columns between the files 
+if there is no common columns, it will merge on parent name 
+}*/
+function processFiles(dataFrames) {
+    let commonColumns = findCommonColumns(dataFrames);
 
-//     if (commonColumns.length > 0) {
-//         populateColumnDropdown(commonColumns);
-//     } else {
-//         alert("No common columns found. Defaulting to Parent Name.");
-//         mergeOnParentName(dataFrames);
-//     }
-// }
+    if (commonColumns.length > 0) {
+        populateColumnDropdown(commonColumns);
+    } else {
+        alert("No common columns found. Defaulting to Parent Name.");
+        mergeOnParentName(dataFrames);
+    }
+}
 
-// /*{
-// the function below extracts the columns from each file and sees if there are any common columns 
-// and returns the common columns for filtering 
-// }*/
-
-
-// function findCommonColumns(dataFrames) {
-//     let allColumns = dataFrames.map(df => Object.keys(df.data[0] || {}));
-//     return allColumns.reduce((a, b) => a.filter(c => b.includes(c)), allColumns[0] || []);
-// }
-
-// /*{
-// the function below takes the common columns from above and populates the <select> list for filtering
-
-// }*/
+/*{
+the function below extracts the columns from each file and sees if there are any common columns 
+and returns the common columns for filtering 
+}*/
 
 
-// function populateColumnDropdown(columns) {
-//     let columnSelect = document.getElementById("columnSelect");
-//     columnSelect.innerHTML = "";
-//     columns.forEach(col => {
-//         let option = document.createElement("option");
-//         option.value = col;
-//         option.textContent = col;
-//         columnSelect.appendChild(option);
-//     });
-// }
+function findCommonColumns(dataFrames) {
+    let allColumns = dataFrames.map(df => Object.keys(df.data[0] || {}));
+    return allColumns.reduce((a, b) => a.filter(c => b.includes(c)), allColumns[0] || []);
+}
 
-// /*{
-// the function below if there are no common columns it will revert to merging on the parent name (needs to cbe changed )
-// }*/
+/*{
+the function below takes the common columns from above and populates the <select> list for filtering
+
+}*/
 
 
-// function mergeOnParentName(dataFrames) {
-//     let mergedData = {};
+function populateColumnDropdown(columns) {
+    let columnSelect = document.getElementById("columnSelect");
+    columnSelect.innerHTML = "";
+    columns.forEach(col => {
+        let option = document.createElement("option");
+        option.value = col;
+        option.textContent = col;
+        columnSelect.appendChild(option);
+    });
+}
 
-//     dataFrames.forEach(df => {
-//         df.data.forEach(row => {
-//             let key = row["Parent First Name"] + " " + row["Parent Last Name"];
-//             if (!mergedData[key]) {
-//                 mergedData[key] = row;
-//             } else {
-//                 Object.assign(mergedData[key], row);
-//             }
-//         });
-//     });
+/*{
+the function below if there are no common columns it will revert to merging on the parent name (needs to cbe changed )
+}*/
 
-//     displayTable(Object.values(mergedData));
-// }
-// /*{
-// the function below gets the selected column and filter text.
-// merged data to show only rows that include the filter text in selected column
-// call displaytable(filtereddata)
-// }*/
 
-// document.getElementById("applyFilter").addEventListener("click", function () {
-//     let filterValue = document.getElementById("filter").value.toLowerCase();
-//     let selectedColumn = document.getElementById("columnSelect").value;
+function mergeOnParentName(dataFrames) {
+    let mergedData = {};
 
-//     let filteredData = mergedData.filter(row =>
-//         row[selectedColumn] && row[selectedColumn].toLowerCase().includes(filterValue)
-//     );
+    dataFrames.forEach(df => {
+        df.data.forEach(row => {
+            let key = row["Parent First Name"] + " " + row["Parent Last Name"];
+            if (!mergedData[key]) {
+                mergedData[key] = row;
+            } else {
+                Object.assign(mergedData[key], row);
+            }
+        });
+    });
 
-//     displayTable(filteredData);
-// });
+    displayTable(Object.values(mergedData));
+}
+/*{
+the function below gets the selected column and filter text.
+merged data to show only rows that include the filter text in selected column
+call displaytable(filtereddata)
+}*/
+
+document.getElementById("applyFilter").addEventListener("click", function () {
+    let filterValue = document.getElementById("filter").value.toLowerCase();
+    let selectedColumn = document.getElementById("columnSelect").value;
+
+    let filteredData = mergedData.filter(row =>
+        row[selectedColumn] && row[selectedColumn].toLowerCase().includes(filterValue)
+    );
+
+    displayTable(filteredData);
+});
 
 /*{
 the function below converts data into HTML <table>
@@ -238,7 +238,7 @@ function displayTable(data) {
     outputDiv.innerHTML = tableHTML;
 }
 /*{
-the function below exports the merged files into one file for information
+the function below
 }*/
 // Export to Excel function
 document.getElementById('exportExcel').addEventListener('click', function () {

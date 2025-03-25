@@ -87,8 +87,8 @@ the processFiles(dataframes) will contain the parsed files
 
 document.getElementById("fileInput").addEventListener("change", function (event) {
     let files = event.target.files;
-    if (files.length !== 3) {
-        alert("Please upload exactly 3 files (CSV/XLSX).");
+    if (files.length === 0 || files.length > 3) {
+
         return;
     }
 
@@ -112,7 +112,8 @@ document.getElementById("fileInput").addEventListener("change", function (event)
             dataFrames.push({ name: file.name, data: jsonData });
             processedFiles++;
 
-            if (processedFiles === 3) {
+            if (processedFiles === files.length) {
+                alert("Files uploaded successfully");
                 processFiles(dataFrames);
             }
         };
@@ -126,30 +127,30 @@ document.getElementById("fileInput").addEventListener("change", function (event)
 });
 
 /*{
-the function below will extract the files from upload and see if there are any common columns between the files 
-if there is no common columns, it will merge on parent name 
+the function below will extract the files from upload and see if there are any common columns between the files
+if there is no common columns, it will merge on parent name
 }*/
-function processFiles(dataFrames) {
-    let commonColumns = findCommonColumns(dataFrames);
+// function processFiles(dataFrames) {
+//     let commonColumns = findCommonColumns(dataFrames);
 
-    if (commonColumns.length > 0) {
-        populateColumnDropdown(commonColumns);
-    } else {
-        alert("No common columns found. Defaulting to Parent Name.");
-        mergeOnParentName(dataFrames);
-    }
-}
+//     if (commonColumns.length > 0) {
+//         populateColumnDropdown(commonColumns);
+//     } else {
+//         alert("No common columns found. Defaulting to Parent Name.");
+//         mergeOnParentName(dataFrames);
+//     }
+// }
 
 /*{
-the function below extracts the columns from each file and sees if there are any common columns 
-and returns the common columns for filtering 
+the function below extracts the columns from each file and sees if there are any common columns
+and returns the common columns for filtering
 }*/
 
 
-function findCommonColumns(dataFrames) {
-    let allColumns = dataFrames.map(df => Object.keys(df.data[0] || {}));
-    return allColumns.reduce((a, b) => a.filter(c => b.includes(c)), allColumns[0] || []);
-}
+// function findCommonColumns(dataFrames) {
+//     let allColumns = dataFrames.map(df => Object.keys(df.data[0] || {}));
+//     return allColumns.reduce((a, b) => a.filter(c => b.includes(c)), allColumns[0] || []);
+// }
 
 /*{
 the function below takes the common columns from above and populates the <select> list for filtering
@@ -157,99 +158,99 @@ the function below takes the common columns from above and populates the <select
 }*/
 
 
-function populateColumnDropdown(columns) {
-    let columnSelect = document.getElementById("columnSelect");
-    columnSelect.innerHTML = "";
-    columns.forEach(col => {
-        let option = document.createElement("option");
-        option.value = col;
-        option.textContent = col;
-        columnSelect.appendChild(option);
-    });
-}
+// function populateColumnDropdown(columns) {
+//     let columnSelect = document.getElementById("columnSelect");
+//     columnSelect.innerHTML = "";
+//     columns.forEach(col => {
+//         let option = document.createElement("option");
+//         option.value = col;
+//         option.textContent = col;
+//         columnSelect.appendChild(option);
+//     });
+// }
 
 /*{
 the function below if there are no common columns it will revert to merging on the parent name (needs to cbe changed )
 }*/
 
 
-function mergeOnParentName(dataFrames) {
-    let mergedData = {};
+// function mergeOnParentName(dataFrames) {
+//     let mergedData = {};
 
-    dataFrames.forEach(df => {
-        df.data.forEach(row => {
-            let key = row["Parent First Name"] + " " + row["Parent Last Name"];
-            if (!mergedData[key]) {
-                mergedData[key] = row;
-            } else {
-                Object.assign(mergedData[key], row);
-            }
-        });
-    });
+//     dataFrames.forEach(df => {
+//         df.data.forEach(row => {
+//             let key = row["Parent First Name"] + " " + row["Parent Last Name"];
+//             if (!mergedData[key]) {
+//                 mergedData[key] = row;
+//             } else {
+//                 Object.assign(mergedData[key], row);
+//             }
+//         });
+//     });
 
-    displayTable(Object.values(mergedData));
-}
+//     displayTable(Object.values(mergedData));
+// }
 /*{
 the function below gets the selected column and filter text.
 merged data to show only rows that include the filter text in selected column
 call displaytable(filtereddata)
 }*/
 
-document.getElementById("applyFilter").addEventListener("click", function () {
-    let filterValue = document.getElementById("filter").value.toLowerCase();
-    let selectedColumn = document.getElementById("columnSelect").value;
+// document.getElementById("applyFilter").addEventListener("click", function () {
+//     let filterValue = document.getElementById("filter").value.toLowerCase();
+//     let selectedColumn = document.getElementById("columnSelect").value;
 
-    let filteredData = mergedData.filter(row =>
-        row[selectedColumn] && row[selectedColumn].toLowerCase().includes(filterValue)
-    );
+//     let filteredData = mergedData.filter(row =>
+//         row[selectedColumn] && row[selectedColumn].toLowerCase().includes(filterValue)
+//     );
 
-    displayTable(filteredData);
-});
+//     displayTable(filteredData);
+// });
 
 /*{
 the function below converts data into HTML <table>
-handles both headers and cell values 
+handles both headers and cell values
 }*/
 
 
-function displayTable(data) {
-    let outputDiv = document.getElementById("output");
-    let tableHTML = "<table border='1' style='border-collapse: collapse; width: 100%;'>";
+// function displayTable(data) {
+//     let outputDiv = document.getElementById("output");
+//     let tableHTML = "<table border='1' style='border-collapse: collapse; width: 100%;'>";
 
-    if (data.length > 0) {
-        tableHTML += "<tr>";
-        Object.keys(data[0]).forEach(col => {
-            tableHTML += `<th style='padding: 5px; background: #ddd;'>${col}</th>`;
-        });
-        tableHTML += "</tr>";
+//     if (data.length > 0) {
+//         tableHTML += "<tr>";
+//         Object.keys(data[0]).forEach(col => {
+//             tableHTML += `<th style='padding: 5px; background: #ddd;'>${col}</th>`;
+//         });
+//         tableHTML += "</tr>";
 
-        data.forEach(row => {
-            tableHTML += "<tr>";
-            Object.values(row).forEach(cell => {
-                tableHTML += `<td style='padding: 5px;'>${cell}</td>`;
-            });
-            tableHTML += "</tr>";
-        });
-    } else {
-        tableHTML += "<tr><td>No matching data found</td></tr>";
-    }
+//         data.forEach(row => {
+//             tableHTML += "<tr>";
+//             Object.values(row).forEach(cell => {
+//                 tableHTML += `<td style='padding: 5px;'>${cell}</td>`;
+//             });
+//             tableHTML += "</tr>";
+//         });
+//     } else {
+//         tableHTML += "<tr><td>No matching data found</td></tr>";
+//     }
 
-    tableHTML += "</table>";
-    outputDiv.innerHTML = tableHTML;
-}
+//     tableHTML += "</table>";
+//     outputDiv.innerHTML = tableHTML;
+// }
 /*{
 the function below
 }*/
 // Export to Excel function
-document.getElementById('exportExcel').addEventListener('click', function () {
-    if (!window.filteredData || window.filteredData.length < 1) {
-        alert("No data to export!");
-        return;
-    }
+// document.getElementById('exportExcel').addEventListener('click', function () {
+//     if (!window.filteredData || window.filteredData.length < 1) {
+//         alert("No data to export!");
+//         return;
+//     }
 
-    const ws = XLSX.utils.aoa_to_sheet(window.filteredData); // Convert data to sheet
-    const wb = XLSX.utils.book_new(); // Create a new workbook
-    XLSX.utils.book_append_sheet(wb, ws, "Filtered Data"); // Append the sheet
+//     const ws = XLSX.utils.aoa_to_sheet(window.filteredData); // Convert data to sheet
+//     const wb = XLSX.utils.book_new(); // Create a new workbook
+//     XLSX.utils.book_append_sheet(wb, ws, "Filtered Data"); // Append the sheet
 
-    XLSX.writeFile(wb, "Filtered_Data.xlsx"); // Export as Excel file
-});
+//     XLSX.writeFile(wb, "Filtered_Data.xlsx"); // Export as Excel file
+// });
